@@ -138,7 +138,9 @@ void ProgramNode::visit(ASTVisitorBase *visitor)
 /* The TypeNode Class                                                             */
 /**********************************************************************************/
 
-// ECE467 STUDENT: implement the class
+bool TypeNode::isArray(){
+    return false;
+}
 
 void TypeNode::visit(ASTVisitorBase *visitor){
     visitor->visitTypeNode(this);
@@ -147,8 +149,21 @@ void TypeNode::visit(ASTVisitorBase *visitor){
 /* The PrimitiveTypeNode Class                                                    */
 /**********************************************************************************/
 
-// ECE467 STUDENT: implement the class
+PrimitiveTypeNode::PrimitiveTypeNode() : type(TypeNode::Void) {}
+PrimitiveTypeNode::PrimitiveTypeNode(TypeEnum type_) : type(type_) {}
 
+void PrimitiveTypeNode::setType(TypeEnum type_) {
+    type = type_;
+}
+TypeNode::TypeEnum PrimitiveTypeNode::getTypeEnum() const {
+    return type;
+}
+bool PrimitiveTypeNode::operator == (const PrimitiveTypeNode& other) {
+    return type == other.type;
+}
+bool PrimitiveTypeNode::operator != (const PrimitiveTypeNode& other) {
+    return type != other.type;
+}
 void PrimitiveTypeNode::visit(ASTVisitorBase *visitor){
     visitor->visitPrimitiveTypeNode(this);
 }
@@ -156,19 +171,55 @@ void PrimitiveTypeNode::visit(ASTVisitorBase *visitor){
 /**********************************************************************************/
 /* The ArrayTypeNode Class                                                        */
 /**********************************************************************************/
-
-// ECE467 STUDENT: implement the class
-
+ArrayTypeNode::ArrayTypeNode() {
+    type = nullptr;
+    size = 0;
+}
+ArrayTypeNode::ArrayTypeNode(PrimitiveTypeNode *type_) {
+    type = type_;
+    size = 0;
+}
+ArrayTypeNode::ArrayTypeNode(PrimitiveTypeNode *type_, int size_) {
+    type = type_;
+    size = size_;
+}
+void ArrayTypeNode::setType(TypeEnum type_) {
+    type->setType(type_);
+}
+TypeNode::TypeEnum ArrayTypeNode::getTypeEnum() const {
+    return type->getTypeEnum();
+}
+void ArrayTypeNode::setSize(int size_) {
+    size = size_;
+}
+int ArrayTypeNode::getSize() {
+    return size;
+}
+bool ArrayTypeNode::operator == (const ArrayTypeNode& other) {
+    return type == other.type && size == other.size;
+}
+bool ArrayTypeNode::operator != (const ArrayTypeNode& other) {
+    return type != other.type || size != other.size;
+}
+bool ArrayTypeNode::isArray(){
+    return true;
+}
 void ArrayTypeNode::visit(ASTVisitorBase *visitor){
     visitor->visitArrayTypeNode(this);
 }
-
 /**********************************************************************************/
 /* The IdentifierNode Class                                                       */
 /**********************************************************************************/
 
-// ECE467 STUDENT: implement the class
-
+IdentifierNode::IdentifierNode() {
+    name = "";
+}
+IdentifierNode::IdentifierNode(const std::string &text){
+    name = text;
+}
+const std::string& IdentifierNode::getName() {
+    return name;
+}
 void IdentifierNode::visit(ASTVisitorBase *visitor){
     visitor->visitIdentifierNode(this);
 }
@@ -177,26 +228,22 @@ void IdentifierNode::visit(ASTVisitorBase *visitor){
 /**********************************************************************************/
 
 ParameterNode::ParameterNode() {
-    this->type = nullptr;
-    this->name = nullptr;
+    type = nullptr;
+    name = nullptr;
 }
 ParameterNode::ParameterNode(TypeNode *type_, IdentifierNode *name_) {
     type = type_;
     name = name_;
 }
-
 TypeNode *&ParameterNode::getType() {
     return type;
 }
-
 void ParameterNode::setIdent(IdentifierNode *&name_) {
     name = name_;
 }
-
 IdentifierNode *&ParameterNode::getIdent() {
     return name;
 }
-
 void ParameterNode::visit(ASTVisitorBase *visitor) {
     visitor->visitParameterNode(this);
 }
@@ -205,7 +252,22 @@ void ParameterNode::visit(ASTVisitorBase *visitor) {
 /* The Expression Class                                                           */
 /**********************************************************************************/
 
-// ECE467 STUDENT: implement the class
+ExprNode::ExprNode() : ASTNode() {}
+void ExprNode::setType(PrimitiveTypeNode* type_) {
+    type = type_;
+}
+void ExprNode::setTypeInt(){
+    type->setType(TypeNode::Int);
+}
+void ExprNode::setTypeBool(){
+    type->setType(TypeNode::Bool);
+}
+void ExprNode::setTypeVoid(){
+    type->setType(TypeNode::Void);
+}
+PrimitiveTypeNode* ExprNode::getType() {
+    return type;
+}
 void ExprNode::visit(ASTVisitorBase *visitor){
     visitor->visitExprNode(this);
 }
